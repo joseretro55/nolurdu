@@ -173,6 +173,9 @@ function selectCrypto(key, recalculate = true) {
   selectedCrypto = key;
   selected = key;
   document.querySelectorAll('.crypto-option').forEach(button => button.classList.toggle('active', button.dataset.crypto === key));
+  const rail = $('#cryptoRail');
+  const activeOption = rail.querySelector(`.crypto-option[data-crypto="${key}"]`);
+  if (activeOption) rail.scrollTo({ left: activeOption.offsetLeft - (rail.clientWidth - activeOption.offsetWidth) / 2, behavior: 'smooth' });
   document.querySelectorAll('.chip').forEach(button => button.classList.toggle('active', button.dataset.a === 'crypto'));
   setYear(selectedYear);
   if (recalculate) calc();
