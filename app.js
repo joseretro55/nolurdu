@@ -1,19 +1,318 @@
-const D = window.MARKET_DATA, assets = [['usd', 'Dolar', 'USD'], ['eur', 'Euro', 'EUR'], ['gold', 'Gram altın', 'ALTIN'], ['silver', 'Gümüş', 'GÜMÜŞ'], ['copper', 'Bakır', 'BAKIR'], ['gbp', 'Sterlin', 'GBP'], ['chf', 'İsviçre frangı', 'CHF']]; let selected = 'gold', selectedYear = '2020'; const $ = s => document.querySelector(s), fmt = (n, d = 0) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: d, minimumFractionDigits: d }).format(n), tl = n => fmt(n) + ' TL'; const keys = Object.keys(D.fx).filter(k => D.fx[k]), last = keys.at(-1), years = [...new Set(keys.map(k => k.slice(0, 4)))].filter(y => +y >= 2000 && +y <= 2025);
-let LIVE = null; $('#dataDate').textContent = D.generated.split('-').reverse().join('.'); $('#chips').innerHTML = assets.map(a => `<button class="chip ${a[0] === selected ? 'active' : ''}" data-a="${a[0]}">${a[1]}</button>`).join(''); $('#yearRail').insertAdjacentHTML('beforebegin', '<span class="year-prefix" aria-hidden="true">20</span><button type="button" class="year-arrow year-up" aria-label="Önceki yıl">▲</button>'); $('#yearRail').insertAdjacentHTML('afterend', '<button type="button" class="year-arrow year-down" aria-label="Sonraki yıl">▼</button>'); $('#yearRail').innerHTML = years.map(y => `<button type="button" class="year-box ${y === selectedYear ? 'active' : ''}" data-year="${y}" aria-label="${y}">${y.slice(2)}</button>`).join('');
-function price(a, m) { let f = D.fx[m]; if (!f) return null; if (['usd', 'eur', 'gbp', 'chf'].includes(a)) return f[a.toUpperCase()]; let c = D.commodities[m]; if (!c || !c[a]) return null; if (a === 'gold') return c.gold * f.USD / 31.1034768; if (a === 'silver') return c.silver * f.USD / 31.1034768; return c.copper * f.USD / 1e6 }
-function annual(a, y) { let p = keys.filter(k => k.startsWith(y)).map(k => price(a, k)).filter(Boolean); return p.length ? p.reduce((s, x) => s + x, 0) / p.length : null }
-function parseMoney(value) { let s = String(value).trim().replace(/\s/g, ''); if (!s) return 0; if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); else if ((s.match(/\./g) || []).length > 1 || /\.\d{3}$/.test(s)) s = s.replace(/\./g, ''); return Number(s.replace(/[^\d.-]/g, '')) || 0 }
-function formatMoneyInput() { const input = $('#amount'), value = parseMoney(input.value); input.value = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) }
-function formatMoneyTyping(e) { const input = e.target, raw = input.value.replace(/\./g, '').replace(/[^\d,]/g, ''), comma = raw.indexOf(','), integer = (comma < 0 ? raw : raw.slice(0, comma)).replace(/^0+(?=\d)/, '') || '0', fraction = comma < 0 ? '' : raw.slice(comma + 1).replace(/,/g, '').slice(0, 2); input.value = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Number(integer)) + (comma < 0 ? '' : ',' + fraction); input.setSelectionRange(input.value.length, input.value.length) }
-const minimumWages = { '2000':'Ocak–Mart 82,42; Nisan–Haziran 80,55; Temmuz–Aralık 86,92 TL', '2001':'Ocak–Haziran 102,37; Temmuz 107,32; Ağustos–Aralık 122,19 TL', '2002':'Ocak–Haziran 163,56; Temmuz–Aralık 184,25 TL', '2003':'226,00 TL', '2004':'Ocak–Haziran 303,08; Temmuz–Aralık 318,23 TL', '2005':'350,15 TL', '2006':'380,46 TL', '2007':'Ocak–Haziran 403,03; Temmuz–Aralık 419,15 TL', '2008':'Ocak–Haziran 481,55; Temmuz–Aralık 503,26 TL', '2009':'Ocak–Haziran 527,13; Temmuz–Aralık 546,48 TL', '2010':'Ocak–Haziran 576,57; Temmuz–Aralık 599,12 TL', '2011':'Ocak–Haziran 629,96; Temmuz–Aralık 658,95 TL', '2012':'Ocak–Haziran 701,13; Temmuz–Aralık 739,79 TL', '2013':'Ocak–Haziran 773,01; Temmuz–Aralık 803,68 TL', '2014':'Ocak–Haziran 846,00; Temmuz–Aralık 891,03 TL', '2015':'Ocak–Haziran 949,07; Temmuz–Aralık 1.000,54 TL', '2016':'1.300,99 TL', '2017':'1.404,06 TL', '2018':'1.603,12 TL', '2019':'2.020,90 TL', '2020':'2.324,71 TL', '2021':'2.825,90 TL', '2022':'Ocak–Haziran 4.253,40; Temmuz–Aralık 5.500,35 TL', '2023':'Ocak–Haziran 8.506,80; Temmuz–Aralık 11.402,32 TL', '2024':'17.002,12 TL', '2025':'22.104,67 TL' };
-const minimumWageAverages = { '2000':'86,92', '2001':'122,19', '2002':'184,25', '2003':'226,00', '2004':'318,23', '2005':'350,15', '2006':'380,46', '2007':'419,15', '2008':'503,26', '2009':'546,48', '2010':'599,12', '2011':'658,95', '2012':'739,79', '2013':'803,68', '2014':'891,03', '2015':'1.000,54', '2016':'1.300,99', '2017':'1.404,06', '2018':'1.603,12', '2019':'2.020,90', '2020':'2.324,71', '2021':'2.825,90', '2022':'5.500,35', '2023':'11.402,32', '2024':'17.002,12', '2025':'22.104,67' };
-function updateMinimumWage() { const note = $('#minimumWage'); if (note) note.textContent = `${selectedYear} net asgari ücret: ${minimumWageAverages[selectedYear]} TL / ay` }
-function latest(a) { if (LIVE) { if (['usd', 'eur', 'gbp', 'chf'].includes(a)) return LIVE.fx[a.toUpperCase()]; let usd = LIVE.fx.USD; if (a === 'gold') return LIVE.metals.XAU * usd / 31.1034768; if (a === 'silver') return LIVE.metals.XAG * usd / 31.1034768; if (a === 'copper') return LIVE.metals.HG * usd / 453.59237 } for (let i = keys.length - 1; i >= 0; i--) { let p = price(a, keys[i]); if (p) return p } return null }
-function ranking(y, amount) { let r = assets.map(a => { let x = annual(a[0], y), z = latest(a[0]); return x && z ? { name: a[1], r: (z / x - 1) * 100, v: amount * z / x } : null }).filter(Boolean).sort((a, b) => b.r - a.r), max = Math.max(...r.map(x => x.r)); $('#ranking').innerHTML = r.map((x, i) => `<div class="rank"><b>${i + 1}</b><span>${x.name}</span><div class="track"><i style="width:${Math.max(2, x.r / max * 100)}%"></i></div><strong>${tl(x.v)}<br><small>%${fmt(x.r, 1)}</small></strong></div>`).join('') }
-function calc(show = true) { let amount = parseMoney($('#amount').value), p0 = annual(selected, selectedYear), p1 = latest(selected); if (!amount || !p0 || !p1) return; let q = amount / p0, v = q * p1, g = v - amount, r = g / amount * 100, name = assets.find(a => a[0] === selected)[1]; $('#sentence').textContent = `${selectedYear} yıllık ortalama fiyatıyla ${fmt(amount, 2)} TL ${name} alsaydın bugün`; $('#value').textContent = tl(v); $('#gain').textContent = `${g >= 0 ? '+' : ''}${tl(g)} kazanç`; $('#return').textContent = `%${fmt(r, 1)}`; $('#quantity').textContent = `${fmt(q, q < 10 ? 3 : 2)} ${['gold', 'silver', 'copper'].includes(selected) ? 'gram' : assets.find(a => a[0] === selected)[2]}`; $('#startPrice').textContent = fmt(p0, 2) + ' TL'; $('#endPrice').textContent = fmt(p1, 2) + ' TL'; $('#bar').style.width = Math.min(100, Math.max(2, r / 15)) + '%'; if (show) $('#result').classList.add('show'); ranking(selectedYear, amount) }
-function setYear(y, smooth = false) { selectedYear = y; const rail = $('#yearRail'), target = document.querySelector(`.year-box[data-year="${y}"]`); document.querySelectorAll('.year-box').forEach(b => b.classList.toggle('active', b.dataset.year === y)); if (target) rail.scrollTo({ top: target.offsetTop - (rail.clientHeight - target.offsetHeight) / 2, behavior: smooth ? 'smooth' : 'auto' }); updateMinimumWage() }
-function setupYearWheel() { const rail = $('#yearRail'); let settleTimer, lastWheel = 0; const boxes = [...rail.querySelectorAll('.year-box')]; const changeYear = direction => { const index = years.indexOf(selectedYear), next = Math.max(0, Math.min(years.length - 1, index + direction)); if (next !== index) setYear(years[next], false) }; const nearestCenter = () => { const center = rail.getBoundingClientRect().top + rail.clientHeight / 2; return boxes.reduce((nearest, box) => Math.abs(box.getBoundingClientRect().top + box.offsetHeight / 2 - center) < Math.abs(nearest.getBoundingClientRect().top + nearest.offsetHeight / 2 - center) ? box : nearest) }; const paint = () => { const center = rail.getBoundingClientRect().top + rail.clientHeight / 2; let nearest = boxes[0], best = Infinity; boxes.forEach(box => { const r = box.getBoundingClientRect(), distance = Math.abs(center - (r.top + r.height / 2)), strength = Math.max(0, 1 - distance / 70); box.style.setProperty('--scale', (.68 + strength * .32).toFixed(3)); box.style.setProperty('--opacity', (.28 + strength * .72).toFixed(3)); if (distance < best) { best = distance; nearest = box } }); selectedYear = nearest.dataset.year; boxes.forEach(box => box.classList.toggle('active', box === nearest)) }; rail.addEventListener('scroll', () => { paint(); clearTimeout(settleTimer); settleTimer = setTimeout(() => setYear(nearestCenter().dataset.year, false), 45) }, { passive: true }); rail.addEventListener('wheel', e => { e.preventDefault(); const now = Date.now(); if (now - lastWheel < 55) return; lastWheel = now; changeYear(e.deltaY > 0 ? 1 : -1) }, { passive: false }); rail.addEventListener('keydown', e => { if (!['ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault(); changeYear(e.key === 'ArrowDown' ? 1 : -1) }); $('.year-up').onclick = () => changeYear(-1); $('.year-down').onclick = () => changeYear(1); paint() }
-async function loadLive() { try { let r = await fetch('/api/live'); if (!r.ok) throw new Error('Sunucu canlı verisi alınamadı'); LIVE = await r.json() } catch (e) { try { let [g, s, c] = await Promise.all(['XAU', 'XAG', 'HG'].map(x => fetch(`https://api.gold-api.com/price/${x}`).then(r => r.json()))); LIVE = { fx: D.fx[last], metals: { XAU: g.price, XAG: s.price, HG: c.price }, dates: { tcmb: D.fx[last].date, metals: g.updatedAt } } } catch (_) { LIVE = null } } if (LIVE) { let stamp = LIVE.dates.tcmb || LIVE.dates.metals || D.generated; $('#dataDate').textContent = stamp; calc(false); ranking(selectedYear, parseMoney($('#amount').value)) } }
-$('#yearRail').onclick = e => { let b = e.target.closest('.year-box'); if (b) setYear(b.dataset.year, true) }; setYear(selectedYear); setupYearWheel(); const amountInput = $('#amount'); amountInput.type = 'text'; amountInput.inputMode = 'decimal'; formatMoneyInput(); amountInput.addEventListener('blur', formatMoneyInput); amountInput.addEventListener('keydown', e => { if (e.key === 'Enter') { formatMoneyInput(); calc() } }); $('#chips').onclick = e => { let b = e.target.closest('.chip'); if (!b) return; selected = b.dataset.a; document.querySelectorAll('.chip').forEach(x => x.classList.toggle('active', x === b)); calc() }; $('#calc').onclick = () => { formatMoneyInput(); calc() }; calc(false); ranking(selectedYear, parseMoney($('#amount').value)); loadLive();
+const D = window.MARKET_DATA;
+const C = window.CRYPTO_DATA;
+const traditionalAssets = [
+  ['usd', 'Dolar', 'USD'], ['eur', 'Euro', 'EUR'], ['gold', 'Gram altın', 'ALTIN'],
+  ['silver', 'Gümüş', 'GÜMÜŞ'], ['copper', 'Bakır', 'BAKIR'],
+  ['gbp', 'Sterlin', 'GBP'], ['chf', 'İsviçre frangı', 'CHF']
+];
+const cryptoOrder = ['btc', 'eth', 'sol', 'doge'];
+const cryptoLabels = { btc: 'Bitcoin', eth: 'Ethereum', sol: 'Solana', doge: 'Dogecoin' };
+let selected = 'gold';
+let selectedYear = '2020';
+let cryptoActive = false;
+let selectedCrypto = 'btc';
+let LIVE = null;
+
+const $ = selector => document.querySelector(selector);
+const fmt = (number, digits = 0) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(number);
+const tl = number => `${fmt(number)} TL`;
+const keys = Object.keys(D.fx).filter(key => D.fx[key]);
+const last = keys.at(-1);
+const years = [...new Set(keys.map(key => key.slice(0, 4)))].filter(year => +year >= 2000 && +year <= 2025);
+const minimumWages = { '2000':'86,92', '2001':'122,19', '2002':'184,25', '2003':'226,00', '2004':'318,23', '2005':'350,15', '2006':'380,46', '2007':'419,15', '2008':'503,26', '2009':'546,48', '2010':'599,12', '2011':'658,95', '2012':'739,79', '2013':'803,68', '2014':'891,03', '2015':'1.000,54', '2016':'1.300,99', '2017':'1.404,06', '2018':'1.603,12', '2019':'2.020,90', '2020':'2.324,71', '2021':'2.825,90', '2022':'5.500,35', '2023':'11.402,32', '2024':'17.002,12', '2025':'22.104,67' };
+
+function assetInfo(key) {
+  if (C.assets[key]) return [key, cryptoLabels[key], C.assets[key].symbol];
+  return traditionalAssets.find(asset => asset[0] === key);
+}
+
+function price(asset, month) {
+  const fx = D.fx[month];
+  if (!fx) return null;
+  if (C.assets[asset]) {
+    const usdPrice = C.assets[asset].monthlyUSD[month];
+    return usdPrice ? usdPrice * fx.USD : null;
+  }
+  if (['usd', 'eur', 'gbp', 'chf'].includes(asset)) return fx[asset.toUpperCase()];
+  const commodity = D.commodities[month];
+  if (!commodity || !commodity[asset]) return null;
+  if (asset === 'gold') return commodity.gold * fx.USD / 31.1034768;
+  if (asset === 'silver') return commodity.silver * fx.USD / 31.1034768;
+  return commodity.copper * fx.USD / 1e6;
+}
+
+function annual(asset, year) {
+  const prices = keys.filter(key => key.startsWith(year)).map(key => price(asset, key)).filter(Boolean);
+  return prices.length ? prices.reduce((sum, value) => sum + value, 0) / prices.length : null;
+}
+
+function latest(asset) {
+  if (C.assets[asset]) {
+    const usd = LIVE?.fx?.USD || D.fx[last].USD;
+    return C.assets[asset].latestUSD * usd;
+  }
+  if (LIVE) {
+    if (['usd', 'eur', 'gbp', 'chf'].includes(asset)) return LIVE.fx[asset.toUpperCase()];
+    const usd = LIVE.fx.USD;
+    if (asset === 'gold') return LIVE.metals.XAU * usd / 31.1034768;
+    if (asset === 'silver') return LIVE.metals.XAG * usd / 31.1034768;
+    if (asset === 'copper') return LIVE.metals.HG * usd / 453.59237;
+  }
+  for (let index = keys.length - 1; index >= 0; index--) {
+    const value = price(asset, keys[index]);
+    if (value) return value;
+  }
+  return null;
+}
+
+function parseMoney(value) {
+  let text = String(value).trim().replace(/\s/g, '');
+  if (!text) return 0;
+  if (text.includes(',')) text = text.replace(/\./g, '').replace(',', '.');
+  else if ((text.match(/\./g) || []).length > 1 || /\.\d{3}$/.test(text)) text = text.replace(/\./g, '');
+  return Number(text.replace(/[^\d.-]/g, '')) || 0;
+}
+
+function formatMoneyInput() {
+  const input = $('#amount');
+  input.value = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseMoney(input.value));
+}
+
+function formatMoneyTyping(event) {
+  const input = event.target;
+  const raw = input.value.replace(/\./g, '').replace(/[^\d,]/g, '');
+  const comma = raw.indexOf(',');
+  const integer = (comma < 0 ? raw : raw.slice(0, comma)).replace(/^0+(?=\d)/, '') || '0';
+  const fraction = comma < 0 ? '' : raw.slice(comma + 1).replace(/,/g, '').slice(0, 2);
+  input.value = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Number(integer)) + (comma < 0 ? '' : `,${fraction}`);
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function updateMinimumWage() {
+  const note = $('#minimumWage');
+  if (note) note.textContent = `* ${selectedYear} net asgari ücret: ${minimumWages[selectedYear]} TL / ay`;
+}
+
+function cryptoWarning(message = '') {
+  const warning = $('#cryptoWarning');
+  warning.textContent = message;
+  warning.classList.toggle('show', Boolean(message));
+}
+
+function setYear(year, smooth = false) {
+  let targetYear = year;
+  if (cryptoActive) {
+    const firstYear = C.assets[selectedCrypto].firstYear;
+    if (+targetYear < +firstYear) {
+      targetYear = firstYear;
+      cryptoWarning(`${cryptoLabels[selectedCrypto]} için fiyat verisi ${firstYear} yılında başlıyor. Yıl otomatik olarak ${firstYear} yapıldı.`);
+    } else {
+      cryptoWarning();
+    }
+  }
+  selectedYear = targetYear;
+  const rail = $('#yearRail');
+  const target = document.querySelector(`.year-box[data-year="${targetYear}"]`);
+  document.querySelectorAll('.year-box').forEach(box => box.classList.toggle('active', box.dataset.year === targetYear));
+  if (target) rail.scrollTo({ top: target.offsetTop - (rail.clientHeight - target.offsetHeight) / 2, behavior: smooth ? 'smooth' : 'auto' });
+  updateMinimumWage();
+}
+
+function setupYearWheel() {
+  const rail = $('#yearRail');
+  const boxes = [...rail.querySelectorAll('.year-box')];
+  let settleTimer;
+  let lastWheel = 0;
+  const changeYear = direction => {
+    const index = years.indexOf(selectedYear);
+    const next = Math.max(0, Math.min(years.length - 1, index + direction));
+    if (next !== index) setYear(years[next]);
+  };
+  const nearestCenter = () => {
+    const center = rail.getBoundingClientRect().top + rail.clientHeight / 2;
+    return boxes.reduce((nearest, box) => Math.abs(box.getBoundingClientRect().top + box.offsetHeight / 2 - center) < Math.abs(nearest.getBoundingClientRect().top + nearest.offsetHeight / 2 - center) ? box : nearest);
+  };
+  const paint = () => {
+    const center = rail.getBoundingClientRect().top + rail.clientHeight / 2;
+    let nearest = boxes[0];
+    let best = Infinity;
+    boxes.forEach(box => {
+      const rect = box.getBoundingClientRect();
+      const distance = Math.abs(center - (rect.top + rect.height / 2));
+      const strength = Math.max(0, 1 - distance / 70);
+      box.style.setProperty('--scale', (.68 + strength * .32).toFixed(3));
+      box.style.setProperty('--opacity', (.28 + strength * .72).toFixed(3));
+      if (distance < best) { best = distance; nearest = box; }
+    });
+    boxes.forEach(box => box.classList.toggle('active', box === nearest));
+  };
+  rail.addEventListener('scroll', () => {
+    paint();
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(() => setYear(nearestCenter().dataset.year), 45);
+  }, { passive: true });
+  rail.addEventListener('wheel', event => {
+    event.preventDefault();
+    const now = Date.now();
+    if (now - lastWheel < 55) return;
+    lastWheel = now;
+    changeYear(event.deltaY > 0 ? 1 : -1);
+  }, { passive: false });
+  rail.addEventListener('keydown', event => {
+    if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    changeYear(event.key === 'ArrowDown' ? 1 : -1);
+  });
+  $('.year-up').onclick = () => changeYear(-1);
+  $('.year-down').onclick = () => changeYear(1);
+  paint();
+}
+
+function selectCrypto(key, recalculate = true) {
+  cryptoActive = true;
+  selectedCrypto = key;
+  selected = key;
+  document.querySelectorAll('.crypto-option').forEach(button => button.classList.toggle('active', button.dataset.crypto === key));
+  document.querySelectorAll('.chip').forEach(button => button.classList.toggle('active', button.dataset.a === 'crypto'));
+  setYear(selectedYear);
+  if (recalculate) calc();
+}
+
+function setupCryptoPicker() {
+  const picker = $('#cryptoPicker');
+  $('#cryptoRail').innerHTML = cryptoOrder.map(key => `<button type="button" class="crypto-option ${key === selectedCrypto ? 'active' : ''}" data-crypto="${key}"><b>${C.assets[key].symbol}</b><span>${cryptoLabels[key]}</span></button>`).join('');
+  const change = direction => {
+    const index = cryptoOrder.indexOf(selectedCrypto);
+    selectCrypto(cryptoOrder[(index + direction + cryptoOrder.length) % cryptoOrder.length]);
+  };
+  picker.addEventListener('wheel', event => { event.preventDefault(); change(event.deltaY > 0 ? 1 : -1); }, { passive: false });
+  $('#cryptoPrev').onclick = () => change(-1);
+  $('#cryptoNext').onclick = () => change(1);
+  $('#cryptoRail').onclick = event => {
+    const button = event.target.closest('.crypto-option');
+    if (button) selectCrypto(button.dataset.crypto);
+  };
+}
+
+function ranking(year, amount) {
+  const candidates = [...traditionalAssets, ...cryptoOrder.map(key => assetInfo(key))];
+  const rows = candidates.map(asset => {
+    const start = annual(asset[0], year);
+    const end = latest(asset[0]);
+    return start && end ? { name: asset[1], r: (end / start - 1) * 100, v: amount * end / start } : null;
+  }).filter(Boolean).sort((a, b) => b.r - a.r);
+  const max = Math.max(...rows.map(row => row.r), 1);
+  $('#ranking').innerHTML = rows.map((row, index) => `<div class="rank"><b>${index + 1}</b><span>${row.name}</span><div class="track"><i style="width:${Math.max(2, row.r / max * 100)}%"></i></div><strong>${tl(row.v)}<br><small>%${fmt(row.r, 1)}</small></strong></div>`).join('');
+}
+
+function numberToTurkishLira(number) {
+  const ones = ['', 'bir', 'iki', 'üç', 'dört', 'beş', 'altı', 'yedi', 'sekiz', 'dokuz'];
+  const tens = ['', 'on', 'yirmi', 'otuz', 'kırk', 'elli', 'altmış', 'yetmiş', 'seksen', 'doksan'];
+  const scales = ['', 'bin', 'milyon', 'milyar', 'trilyon', 'katrilyon'];
+  const threeDigits = value => {
+    const words = [];
+    const hundred = Math.floor(value / 100);
+    const ten = Math.floor(value % 100 / 10);
+    const one = value % 10;
+    if (hundred) words.push(hundred === 1 ? 'yüz' : `${ones[hundred]} yüz`);
+    if (ten) words.push(tens[ten]);
+    if (one) words.push(ones[one]);
+    return words.join(' ');
+  };
+  let lira = Math.floor(Math.abs(number));
+  let kurus = Math.round((Math.abs(number) - lira) * 100);
+  if (kurus === 100) { lira++; kurus = 0; }
+  const groups = [];
+  let scale = 0;
+  if (lira === 0) groups.push('sıfır');
+  while (lira > 0 && scale < scales.length) {
+    const group = lira % 1000;
+    if (group) groups.unshift(group === 1 && scale === 1 ? 'bin' : `${threeDigits(group)}${scales[scale] ? ` ${scales[scale]}` : ''}`);
+    lira = Math.floor(lira / 1000);
+    scale++;
+  }
+  const prefix = number < 0 ? 'eksi ' : '';
+  return `${prefix}${groups.join(' ')} Türk lirası${kurus ? ` ${threeDigits(kurus)} kuruş` : ''}`;
+}
+
+function calc(show = true) {
+  const amount = parseMoney($('#amount').value);
+  const start = annual(selected, selectedYear);
+  const end = latest(selected);
+  if (!amount || !start || !end) return;
+  const quantity = amount / start;
+  const value = quantity * end;
+  const gain = value - amount;
+  const rate = gain / amount * 100;
+  const info = assetInfo(selected);
+  $('#sentence').textContent = `${selectedYear} yıllık ortalama fiyatıyla ${fmt(amount, 2)} TL ${info[1]} alsaydın bugün`;
+  $('#value').textContent = tl(value);
+  $('#valueWords').textContent = numberToTurkishLira(value);
+  $('#gain').textContent = `${gain >= 0 ? '+' : ''}${tl(gain)} kazanç`;
+  $('#return').textContent = `%${fmt(rate, 1)}`;
+  const unit = ['gold', 'silver', 'copper'].includes(selected) ? 'gram' : info[2];
+  $('#quantity').textContent = `${fmt(quantity, quantity < 10 ? 4 : 2)} ${unit}`;
+  $('#startPrice').textContent = `${fmt(start, start < 1 ? 6 : 2)} TL`;
+  $('#endPrice').textContent = `${fmt(end, end < 1 ? 6 : 2)} TL`;
+  $('#bar').style.width = `${Math.min(100, Math.max(2, rate / 15))}%`;
+  if (show) $('#result').classList.add('show');
+  ranking(selectedYear, amount);
+}
+
+async function loadLive() {
+  try {
+    const response = await fetch('/api/live');
+    if (!response.ok) throw new Error('Canlı veri alınamadı');
+    LIVE = await response.json();
+  } catch (error) {
+    try {
+      const [gold, silver, copper] = await Promise.all(['XAU', 'XAG', 'HG'].map(symbol => fetch(`https://api.gold-api.com/price/${symbol}`).then(response => response.json())));
+      LIVE = { fx: D.fx[last], metals: { XAU: gold.price, XAG: silver.price, HG: copper.price }, dates: { tcmb: D.fx[last].date, metals: gold.updatedAt } };
+    } catch (_) { LIVE = null; }
+  }
+  if (LIVE) {
+    $('#dataDate').textContent = LIVE.dates.tcmb || LIVE.dates.metals || D.generated;
+    calc(false);
+  }
+}
+
+$('#dataDate').textContent = D.generated.split('-').reverse().join('.');
+$('#chips').innerHTML = [...traditionalAssets, ['crypto', 'Kripto', 'KRİPTO']].map(asset => `<button class="chip ${asset[0] === selected ? 'active' : ''}" data-a="${asset[0]}">${asset[1]}</button>`).join('');
+$('#chips').insertAdjacentHTML('afterend', '<div id="cryptoPicker" class="crypto-picker" hidden><button id="cryptoPrev" class="crypto-nav" type="button" aria-label="Önceki kripto">‹</button><div id="cryptoRail" class="crypto-rail" aria-label="Kripto para seçimi"></div><button id="cryptoNext" class="crypto-nav" type="button" aria-label="Sonraki kripto">›</button><small id="cryptoWarning" class="crypto-warning" role="status"></small></div>');
+$('#yearRail').insertAdjacentHTML('beforebegin', '<span class="year-prefix" aria-hidden="true">20</span><button type="button" class="year-arrow year-up" aria-label="Önceki yıl">▲</button>');
+$('#yearRail').insertAdjacentHTML('afterend', '<button type="button" class="year-arrow year-down" aria-label="Sonraki yıl">▼</button>');
+$('#yearRail').innerHTML = years.map(year => `<button type="button" class="year-box ${year === selectedYear ? 'active' : ''}" data-year="${year}" aria-label="${year}">${year.slice(2)}</button>`).join('');
+$('#yearRail').onclick = event => { const button = event.target.closest('.year-box'); if (button) setYear(button.dataset.year, true); };
+
+setYear(selectedYear);
+setupYearWheel();
+setupCryptoPicker();
+
+const amountInput = $('#amount');
+amountInput.type = 'text';
+amountInput.inputMode = 'decimal';
+formatMoneyInput();
 amountInput.addEventListener('input', formatMoneyTyping);
-$('.money').insertAdjacentHTML('afterend', '<small id="minimumWage" class="minimum-wage-note" title="Kaynak: T.C. Çalışma ve Sosyal Güvenlik Bakanlığı"></small>'); updateMinimumWage();
+amountInput.addEventListener('blur', formatMoneyInput);
+amountInput.addEventListener('keydown', event => { if (event.key === 'Enter') { formatMoneyInput(); calc(); } });
+$('.money').insertAdjacentHTML('afterend', '<small id="minimumWage" class="minimum-wage-note" title="Kaynak: T.C. Çalışma ve Sosyal Güvenlik Bakanlığı"></small>');
+updateMinimumWage();
+
+$('#chips').onclick = event => {
+  const button = event.target.closest('.chip');
+  if (!button) return;
+  if (button.dataset.a === 'crypto') {
+    $('#cryptoPicker').hidden = false;
+    selectCrypto(selectedCrypto);
+    return;
+  }
+  cryptoActive = false;
+  cryptoWarning();
+  $('#cryptoPicker').hidden = true;
+  selected = button.dataset.a;
+  document.querySelectorAll('.chip').forEach(chip => chip.classList.toggle('active', chip === button));
+  calc();
+};
+$('#calc').onclick = () => { formatMoneyInput(); calc(); };
+calc(false);
+loadLive();
