@@ -1,9 +1,47 @@
-<!doctype html><html lang="tr"><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4356889649027410"
-     crossorigin="anonymous"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>O Zaman Alsaydın — Yatırım Geçmişi</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body>
-<link rel="stylesheet" href="year-picker.css"><link rel="stylesheet" href="layout-fix.css"><header><a class="brand" href="#">O ZAMAN <span>ALSAYDIN</span></a><nav><a href="#hesapla">Hesapla</a><a href="#kaynaklar">Veri kaynakları</a></nav></header>
-<main><section class="hero"><div><p class="eyebrow">GEÇMİŞE DÖN, BUGÜNÜ HESAPLA</p><h1>O gün alsaydın,<br><em>bugün ne olurdu?</em></h1><p class="intro">2000’den bugüne, seçtiğin ayda yaptığın yatırımın bugünkü değerini birkaç saniyede gör.</p></div><div class="orb"><span>₺</span><b>?</b></div></section>
-<section id="hesapla" class="calculator"><div class="controls"><label>Yatırım tutarı <div class="money"><input id="amount" type="number" min="1" value="10000"><span>TL</span></div></label><label>Yatırım yılı <div class="year-picker"><div id="yearRail" aria-label="Yatırım yılı"></div></div></label><button id="calc">HESAPLA <span>→</span></button></div><div class="chips" id="chips"></div></section>
-<section class="result" id="result"><div class="result-top"><div><p id="sentence"></p><h2 id="value"></h2><p id="gain"></p></div><div class="return"><small>TOPLAM GETİRİ</small><strong id="return"></strong></div></div><div class="bar"><span id="bar"></span></div><div class="details"><div><small>ALINAN MİKTAR</small><b id="quantity"></b></div><div><small>O GÜNKÜ BİRİM FİYAT</small><b id="startPrice"></b></div><div><small>SON BİRİM FİYAT</small><b id="endPrice"></b></div></div></section>
-<section class="compare"><div><p class="eyebrow">AYNI PARA, FARKLI YOL</p><h2>Hangisi daha çok kazandırırdı?</h2></div><div id="ranking"></div></section>
-<section id="kaynaklar" class="sources"><h2>Veri nasıl hesaplanıyor?</h2><div><p><b>Dövizler</b><br>Geçmişte TCMB aylık satış kurları kullanılır. Güncel değer, TCMB’nin son iş günü bülteninden otomatik alınır. 2000–2004 değerleri bugünkü TL ölçeğine çevrilmiştir.</p><p><b>Altın, gümüş ve bakır</b><br>Geçmiş yıllarda Dünya Bankası aylık fiyatları; güncel değerde Gold API spot fiyatları kullanılır. USD fiyatlar TCMB USD/TL kuru ile grama çevrilir.</p><p><b>Not</b><br>Canlı fiyatlar 15 dakika önbelleğe alınır. Komisyon, makas, vergi ve enflasyon hesaba katılmaz. Sonuçlar yatırım tavsiyesi değildir.</p></div></section></main>
-<footer><span>O ZAMAN ALSAYDIN</span><p>Veri tarihi: <b id="dataDate"></b></p></footer><script src="data.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nolurdu — Yatırım Geçmişi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="year-picker.css">
+  <link rel="stylesheet" href="layout-fix.css">
+</head>
+<body>
+  <header>
+    <a class="brand-logo" href="#" aria-label="Nolurdu ana sayfa"><img src="nolurdu-logo.png" alt="Nolurdu"></a>
+    <nav><a href="#hesapla">Hesapla</a><a href="#kaynaklar">Veri kaynakları</a></nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">GEÇMİŞE DÖN, BUGÜNÜ HESAPLA</p>
+        <h1>O gün alsaydın,<br><em>bugün ne olurdu?</em></h1>
+        <p class="intro">2000’den bugüne, seçtiğin yılda yaptığın yatırımın bugünkü değerini birkaç saniyede gör.</p>
+      </div>
+      <div class="orb"><span>₺</span><b>?</b></div>
+    </section>
+    <section id="hesapla" class="calculator">
+      <div class="controls">
+        <label>Yatırım tutarı <div class="money"><input id="amount" type="number" min="1" value="10000"><span>TL</span></div></label>
+        <label>Yatırım yılı <div class="year-picker"><div id="yearRail" aria-label="Yatırım yılı"></div></div></label>
+        <button id="calc">HESAPLA <span>→</span></button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </section>
+    <section class="result" id="result">
+      <div class="result-top"><div><p id="sentence"></p><h2 id="value"></h2><p id="gain"></p></div><div class="return"><small>TOPLAM GETİRİ</small><strong id="return"></strong></div></div>
+      <div class="bar"><span id="bar"></span></div>
+      <div class="details"><div><small>ALINAN MİKTAR</small><b id="quantity"></b></div><div><small>O GÜNKÜ BİRİM FİYAT</small><b id="startPrice"></b></div><div><small>SON BİRİM FİYAT</small><b id="endPrice"></b></div></div>
+    </section>
+    <section class="compare"><div><p class="eyebrow">AYNI PARA, FARKLI YOL</p><h2>Hangisi daha çok kazandırırdı?</h2></div><div id="ranking"></div></section>
+    <section id="kaynaklar" class="sources"><h2>Veri nasıl hesaplanıyor?</h2><div><p><b>Dövizler</b><br>Geçmişte TCMB aylık satış kurları kullanılır. Güncel değer, TCMB’nin son iş günü bülteninden otomatik alınır. 2000–2004 değerleri bugünkü TL ölçeğine çevrilmiştir.</p><p><b>Altın, gümüş ve bakır</b><br>Geçmiş yıllarda Dünya Bankası aylık fiyatları; güncel değerde Gold API spot fiyatları kullanılır. USD fiyatlar TCMB USD/TL kuru ile grama çevrilir.</p><p><b>Not</b><br>Canlı fiyatlar 15 dakika önbelleğe alınır. Komisyon, makas, vergi ve enflasyon hesaba katılmaz. Sonuçlar yatırım tavsiyesi değildir.</p></div></section>
+  </main>
+  <footer><span>NOLURDU</span><p>Veri tarihi: <b id="dataDate"></b></p></footer>
+  <script src="data.js"></script><script src="app.js"></script>
+</body>
+</html>
