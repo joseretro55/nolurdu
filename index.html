@@ -3,30 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Nolurdu | Geçmiş Yatırım, Mevduat ve Faiz Hesaplama</title>
-  <meta name="description" content="Nolurdu ile geçmişte altın, döviz, kripto veya emtiaya yatırdığınız paranın bugünkü değerini hesaplayın; mevduat ve bileşik faiz araçlarını kullanın.">
-  <link rel="canonical" href="https://nolurdu.com/">
-  <meta name="google-adsense-account" content="ca-pub-4356889649027410">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4356889649027410" crossorigin="anonymous"></script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Nolurdu","alternateName":["Nolurdu.com","N'olurdu"],"url":"https://nolurdu.com/"}</script>
+  <title>Nolurdu — Yatırım Geçmişi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="year-picker.css">
   <link rel="stylesheet" href="layout-fix.css">
-  <link rel="stylesheet" href="pages.css">
 </head>
 <body>
   <header>
     <a class="brand-logo" href="#" aria-label="Nolurdu ana sayfa"><img src="nolurdu-logo.png" alt="Nolurdu"></a>
-    <nav class="site-nav" aria-label="Ana menü">
-  <a href="/index.html#hesapla">Yatırım hesapla</a>
-  <a href="/mevduat-faizi-hesaplama.html">Mevduat</a>
-  <a href="/bilesik-faiz-hesaplama.html">Bileşik faiz</a>
-  <a href="/rehberler.html">Rehberler</a>
-  <a href="/veri-kaynaklari.html">Veri kaynakları</a>
-</nav>
+    <nav><a href="#hesapla">Hesapla</a><a href="#kaynaklar">Veri kaynakları</a></nav>
   </header>
   <main>
     <section class="hero">
@@ -51,32 +39,9 @@
       <div class="details"><div><small>ALINAN MİKTAR</small><b id="quantity"></b></div><div><small>O GÜNKÜ BİRİM FİYAT</small><b id="startPrice"></b></div><div><small>SON BİRİM FİYAT</small><b id="endPrice"></b></div></div>
     </section>
     <section class="compare"><div><p class="eyebrow">AYNI PARA, FARKLI YOL</p><h2>Hangisi daha çok kazandırırdı?</h2></div><div id="ranking"></div></section>
-
-    <section class="home-tools content-section">
-      <p class="eyebrow">DAHA FAZLA HESAPLAMA</p><h2>Paranın geçmişini ve geleceğini tek yerde hesapla</h2>
-      <div class="cards">
-        <a class="card" href="/mevduat-faizi-hesaplama.html"><b>Mevduat faizi</b><span>Brüt faiz, stopaj, net kazanç ve vade sonu toplamını hesapla.</span></a>
-        <a class="card" href="/bilesik-faiz-hesaplama.html"><b>Bileşik faiz</b><span>Düzenli ekleme ve farklı bileşik dönemleriyle birikimin geleceğini gör.</span></a>
-        <a class="card" href="/bitcoin-yatirim-hesaplama.html"><b>Bitcoin rehberi</b><span>Geçmiş Bitcoin fiyatı, TL dönüşümü ve hesaplama yöntemini öğren.</span></a>
-        <a class="card" href="/altin-yatirim-hesaplama.html"><b>Altın rehberi</b><span>Ons, kur ve gram altın ilişkisinin sonucu nasıl etkilediğini incele.</span></a>
-        <a class="card" href="/dolar-yatirim-hesaplama.html"><b>Dolar rehberi</b><span>Geçmiş kur hesabında yıllık ortalama ve alış-satış farkını anla.</span></a>
-        <a class="card" href="/rehberler.html"><b>Tüm rehberler</b><span>Finansal hesapların mantığını sade örneklerle keşfet.</span></a>
-      </div>
-    </section>
-    <section class="content-section home-intro"><div><p class="eyebrow">NOLURDU NEDİR?</p><h2>Bir sonuçtan fazlası: hesabın nasıl oluştuğunu da gösterir.</h2></div><div><p>Nolurdu, geçmişte belirli bir yatırım aracına ayrılan paranın bugünkü yaklaşık değerini hesaplayan bağımsız bir bilgi ve hesaplama platformudur. Sonuçlarda kullanılan geçmiş fiyatlar, mümkün olduğunda güvenilir veri serilerinden alınır; fiyatların yıllık ortalaması kullanılır ve sonuçların gerçek alış-satış işlemlerinden neden farklılaşabileceği açıkça belirtilir.</p><p>Hesaplama sonuçlarına komisyon, vergi, banka makası, saklama ücreti ve enflasyon otomatik olarak dahil edilmeyebilir. Bu nedenle sonuçlar yatırım kararı vermek için değil, geçmiş performansı anlamak ve farklı senaryoları karşılaştırmak için kullanılmalıdır.</p></div></section>
-    <section class="content-section faq"><h2>Sık sorulan sorular</h2>
-      <details><summary>Sonuçlar neden bankadaki gerçek işlemle aynı olmayabilir?</summary><p>Bankalar ve aracı kurumlar alış-satış makası, komisyon, vergi ve ürün bazlı ücret uygulayabilir. Nolurdu bu masrafları genel hesaplamaya eklemez.</p></details>
-      <details><summary>Yıllık ortalama fiyat neden kullanılıyor?</summary><p>Yalnızca yıl seçildiğinde tek bir günü varsaymak yanıltıcı olabilir. Yıl içindeki mevcut aylık fiyatların ortalaması daha dengeli bir karşılaştırma sunar.</p></details>
-      <details><summary>Kripto verileri her yıl için var mı?</summary><p>Hayır. Her kripto varlık için güvenilir fiyat serisinin başladığı tarih farklıdır. Sistem mümkün olmayan yılları seçtiğinizde başlangıç yılına yönlendirir.</p></details>
-      <details><summary>Bu site yatırım tavsiyesi veriyor mu?</summary><p>Hayır. Tüm hesaplamalar eğitim ve bilgilendirme amaçlıdır. Geçmiş performans gelecekteki sonucu garanti etmez.</p></details>
-    </section>
     <section id="kaynaklar" class="sources"><h2>Veri nasıl hesaplanıyor?</h2><div><p><b>Dövizler</b><br>Geçmişte TCMB aylık satış kurları kullanılır. Güncel değer, TCMB’nin son iş günü bülteninden otomatik alınır. 2000–2004 değerleri bugünkü TL ölçeğine çevrilmiştir.</p><p><b>Altın, gümüş ve bakır</b><br>Geçmiş yıllarda Dünya Bankası aylık fiyatları; güncel değerde Gold API spot fiyatları kullanılır. USD fiyatlar TCMB USD/TL kuru ile grama çevrilir.</p><p><b>Not</b><br>Canlı fiyatlar 15 dakika önbelleğe alınır. Komisyon, makas, vergi ve enflasyon hesaba katılmaz. Sonuçlar yatırım tavsiyesi değildir.</p></div></section>
   </main>
-  <footer class="site-footer">
-  <div><a class="footer-brand" href="/">NOLURDU</a><p>Geçmiş değerleri ve finansal hesaplamaları anlaşılır hale getirir.</p></div>
-  <div class="footer-links"><a href="/hakkimizda.html">Hakkımızda</a><a href="/iletisim.html">İletişim</a><a href="/gizlilik-politikasi.html">Gizlilik</a><a href="/cerez-politikasi.html">Çerezler</a></div>
-  <p class="footer-note">Hesaplamalar bilgilendirme amaçlıdır; yatırım tavsiyesi değildir.</p>
-</footer>
+  <footer><span>NOLURDU</span><p>Veri tarihi: <b id="dataDate"></b></p></footer>
   <script src="data.js"></script><script src="crypto-data.js"></script><script src="app.js"></script>
 </body>
 </html>

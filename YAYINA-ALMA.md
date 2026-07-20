@@ -1,18 +1,12 @@
-# Güncel siteyi yayınlama
+# Yayına alma
 
-1. GitHub'da `nolurdu` deposunu aç.
-2. **Add file > Upload files** seç.
-3. Bu klasördeki bütün dosyaları yükleme alanına sürükle.
-4. Aynı adlı dosyaların güncellenmesine izin ver.
-5. Commit mesajı olarak `Site içerik ve hesaplama araçları güncellendi` yaz.
-6. **Commit changes** seç.
-7. Cloudflare Workers/Pages dağıtımının tamamlanmasını bekle.
-8. `https://nolurdu.com` adresini Ctrl+F5 ile yenile.
-9. Search Console > Site Haritaları bölümüne `sitemap.xml` gönder.
-10. Yeni sayfalar dizine girdikten sonra AdSense incelemesini yeniden iste.
+Bu klasör Vercel üzerinde doğrudan yayımlanabilecek şekilde hazırlanmıştır. `api/live.js` canlı TCMB ve metal fiyatlarını sunucu tarafında birleştirir; API anahtarı gerekmez.
 
-Kontrol adresleri:
-- https://nolurdu.com/ads.txt
-- https://nolurdu.com/robots.txt
-- https://nolurdu.com/sitemap.xml
-- https://nolurdu.com/mevduat-faizi-hesaplama.html
+1. `outputs` klasörünü yeni bir GitHub deposuna yükleyin.
+2. Vercel'de **New Project** ile depoyu seçin.
+3. Framework seçimini **Other**, kök dizini de deponun kökü olarak bırakın.
+4. Yayın tamamlanınca Vercel projesindeki **Domains** alanından alan adınızı bağlayın.
+
+Canlı veri uç noktası: `/api/live`
+
+Önbellek süresi 15 dakikadır. TCMB hafta sonu ve tatillerde son iş günü bültenini döndürür. Haricî servis geçici olarak çalışmazsa arayüz yerel son veriye geri döner.
