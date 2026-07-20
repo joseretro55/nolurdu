@@ -12,15 +12,18 @@
   <link rel="stylesheet" href="layout-fix.css">
 </head>
 <body>
-  <header>
-    <a class="brand-logo" href="#" aria-label="Nolurdu ana sayfa"><img src="nolurdu-logo.png" alt="Nolurdu"></a>
-    <nav>
-      <a href="#hesapla">Yatırım hesapla</a>
-      <a href="/mevduat-faizi-hesaplama.html">Mevduat hesapla</a>
-      <a href="/bilesik-faiz-hesaplama.html">Bileşik faiz hesapla</a>
-      <a href="#kaynaklar">Veri kaynakları</a>
-    </nav>
-  </header>
+  <header class="site-header">
+  <a class="brand-logo" href="/" aria-label="Nolurdu ana sayfa"><img src="/nolurdu-logo.png" alt="Nolurdu"></a>
+  <nav class="site-nav" aria-label="Ana menü">
+    <a href="/#hesapla">Yatırım hesapla</a>
+    <a href="/mevduat-faizi-hesaplama.html">Mevduat hesapla</a>
+    <a href="/bilesik-faiz-hesaplama.html">Bileşik faiz hesapla</a>
+    <a href="/rehberler.html">Rehberler</a>
+    <a href="/veri-kaynaklari.html">Veri kaynakları</a>
+  </nav>
+</header>
+<div class="site-disclaimer" role="note">Hesaplamalar yalnızca bilgilendirme amaçlıdır; yatırım tavsiyesi değildir.</div>
+
   <main>
     <section class="hero">
       <div>
@@ -45,6 +48,26 @@
     </section>
     <section class="compare"><div><p class="eyebrow">AYNI PARA, FARKLI YOL</p><h2>Hangisi daha çok kazandırırdı?</h2></div><div id="ranking"></div></section>
     <section id="kaynaklar" class="sources"><h2>Veri nasıl hesaplanıyor?</h2><div><p><b>Dövizler</b><br>Geçmişte TCMB aylık satış kurları kullanılır. Güncel değer, TCMB’nin son iş günü bülteninden otomatik alınır. 2000–2004 değerleri bugünkü TL ölçeğine çevrilmiştir.</p><p><b>Altın, gümüş ve bakır</b><br>Geçmiş yıllarda Dünya Bankası aylık fiyatları; güncel değerde Gold API spot fiyatları kullanılır. USD fiyatlar TCMB USD/TL kuru ile grama çevrilir.</p><p><b>Not</b><br>Canlı fiyatlar 15 dakika önbelleğe alınır. Komisyon, makas, vergi ve enflasyon hesaba katılmaz. Sonuçlar yatırım tavsiyesi değildir.</p></div></section>
+
+    <section id="nasil-calisir" class="home-content-section">
+      <p class="eyebrow">HESAPLAMA MANTIĞI</p>
+      <h2>Nolurdu nasıl hesaplıyor?</h2>
+      <p>Seçtiğiniz yıl için ilgili yatırım aracının mevcut geçmiş verilerinden yıllık ortalama birim fiyat hesaplanır. Girdiğiniz yatırım tutarı bu fiyata bölünerek o tarihte yaklaşık kaç birim alınabileceği bulunur. Ardından aynı miktar, son güncel birim fiyatla çarpılarak bugünkü tahmini değer gösterilir.</p>
+      <p>Sonuçlar alış-satış makası, komisyon, saklama gideri, vergi ve enflasyon gibi gerçek hayattaki maliyetleri otomatik olarak içermez. Bu nedenle ekrandaki rakam, geçmiş performansı anlamaya yardımcı olan yaklaşık bir karşılaştırmadır.</p>
+      <div class="info-grid">
+        <article><h3>Yıllık ortalama neden kullanılıyor?</h3><p>Tek bir gün seçilmediğinde yıl içindeki fiyat dalgalanmalarının etkisini azaltmak için mevcut ayların ortalaması kullanılır. Böylece yılın yalnızca en yüksek veya en düşük gününe bağlı yanıltıcı bir sonuç oluşmaz.</p></article>
+        <article><h3>Canlı fiyatlar nasıl güncelleniyor?</h3><p>Döviz ve emtia fiyatları erişilebilen güncel veri kaynaklarından alınır. Veri kaynağı geçici olarak ulaşılamazsa sistem son güvenilir kayıtla hesaplama yapabilir ve veri tarihi ekranda gösterilir.</p></article>
+        <article><h3>Sonuç neden bankayla farklı olabilir?</h3><p>Banka ve aracı kurumların uyguladığı makas, komisyon, valör, işlem saati ve ürün koşulları değişebilir. Nolurdu piyasa verileriyle yaklaşık hesap yapar; kişiye özel işlem fiyatını bilemez.</p></article>
+      </div>
+    </section>
+    <section class="home-content-section faq-home">
+      <p class="eyebrow">SIK SORULAN SORULAR</p>
+      <h2>Geçmiş yatırım hesabı hakkında</h2>
+      <details><summary>Bu sonuç kesin kazancı mı gösterir?</summary><p>Hayır. Sonuç, seçilen yılın ortalama fiyatı ve güncel fiyat üzerinden yapılan matematiksel bir tahmindir. Gerçek işlem maliyetleri ve kişisel alış fiyatları farklı olabilir.</p></details>
+      <details><summary>Enflasyon hesaba katılıyor mu?</summary><p>Şu an ana yatırım karşılaştırmasında nominal TL değeri gösterilir. Enflasyondan arındırılmış gerçek getiri ayrıca değerlendirilmelidir.</p></details>
+      <details><summary>Kripto para verileri neden bazı yıllarda başlamıyor?</summary><p>Her kripto varlığın güvenilir piyasa fiyatı farklı bir tarihte oluşmuştur. Veri bulunmayan yıllar hesaplamaya dahil edilmez.</p></details>
+      <details><summary>Mevduat ve bileşik faiz araçları ne işe yarar?</summary><p>Mevduat aracı belirli vade için brüt ve net faiz tahmini yapar. Bileşik faiz aracı ise günlük kazanılan faizin ana paraya eklenmesi ve aylık düzenli katkının birikimi nasıl büyüttüğünü gösterir.</p></details>
+    </section>
   </main>
   <footer><span>NOLURDU</span><p>Veri tarihi: <b id="dataDate"></b></p></footer>
   <script src="data.js"></script><script src="crypto-data.js"></script><script src="app.js"></script>
