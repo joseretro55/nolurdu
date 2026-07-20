@@ -23,9 +23,9 @@
     return nf(value, 4, 6);
   };
 
-  const card = (label, value, cssClass = '') => {
-    if (!Number.isFinite(value)) return '';
-    return `<span class="rate-ticker-item ${cssClass}"><span>${label}</span><b>${value} TL</b></span>`;
+  const card = (label, displayValue, cssClass = '') => {
+    if (displayValue === null || displayValue === undefined || displayValue === '') return '';
+    return `<span class="rate-ticker-item ${cssClass}"><span>${label}</span><b>${displayValue} TL</b></span>`;
   };
 
   function render(snapshot) {
