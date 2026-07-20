@@ -12,72 +12,105 @@
   };
   const fxOrder = ['USD', 'EUR', 'GBP', 'CHF', 'JPY', 'CAD', 'AUD', 'CNY', 'SAR', 'AED'];
 
-  const format = (value, min = 2, max = 4) => new Intl.NumberFormat('tr-TR', {
+  const nf = (value, min = 2, max = 4) => new Intl.NumberFormat('tr-TR', {
     minimumFractionDigits: min,
     maximumFractionDigits: max
   }).format(value);
 
-  const formatCrypto = value => {
-    if (value >= 1000) return format(value, 0, 0);
-    if (value >= 1) return format(value, 2, 2);
-    return format(value, 4, 6);
+  const cryptoFormat = value => {
+    if (value >= 1000) return nf(value, 0, 0);
+    if (value >= 1) return nf(value, 2, 2);
+    return nf(value, 4, 6);
   };
 
-  const item = (label, value, suffix = 'TL', className = '') => {
+  const card = (label, value, cssClass = '') => {
     if (!Number.isFinite(value)) return '';
-    return `<span class="rate-ticker-item ${className}"><span>${label}</span><b>${value} ${suffix}</b></span>`;
+    return `<span class="rate-ticker-item ${cssClass}"><span>${label}</span><b>${value} TL</b></span>`;
   };
 
-  function render({ fx = {}, crypto = {}, metals = {}, date = '' }) {
+  function render(snapshot) {
+    const { fx = {}, crypto = {}, metals = {}, date = '', note = '' } = snapshot;
     const parts = [];
 
     fxOrder.forEach(code => {
-      if (Number.isFinite(fx[code])) parts.push(item(fxLabels[code], format(fx[code]), 'TL', 'is-fx'));
+      if (Number.isFinite(fx[code])) parts.push(card(fxLabels[code], nf(fx[code]), 'is-fx'));
     });
 
-    if (Number.isFinite(metals.goldGram)) parts.push(item('Gram Altın', format(metals.goldGram, 2, 2), 'TL', 'is-metal'));
-    if (Number.isFinite(metals.silverGram)) parts.push(item('Gram Gümüş', format(metals.silverGram, 2, 2), 'TL', 'is-metal'));
-    if (Number.isFinite(metals.copperKg)) parts.push(item('Bakır / kg', format(metals.copperKg, 2, 2), 'TL', 'is-metal'));
+    if (Number.isFinite(metals.goldGram)) parts.push(card('Gram Altın', nf(metals.goldGram, 2, 2), 'is-metal'));
+    if (Number.isFinite(metals.silverGram)) parts.push(card('Gram Gümüş', nf(metals.silverGram, 2, 2), 'is-metal'));
+    if (Number.isFinite(metals.copperKg)) parts.push(card('Bakır / kg', nf(metals.copperKg, 2, 2), 'is-metal'));
 
-    if (Number.isFinite(crypto.bitcoin)) parts.push(item('Bitcoin', formatCrypto(crypto.bitcoin), 'TL', 'is-crypto'));
-    if (Number.isFinite(crypto.ethereum)) parts.push(item('Ethereum', formatCrypto(crypto.ethereum), 'TL', 'is-crypto'));
-    if (Number.isFinite(crypto.solana)) parts.push(item('Solana', formatCrypto(crypto.solana), 'TL', 'is-crypto'));
-    if (Number.isFinite(crypto.dogecoin)) parts.push(item('Dogecoin', formatCrypto(crypto.dogecoin), 'TL', 'is-crypto'));
+    if (Number.isFinite(crypto.bitcoin)) parts.push(card('Bitcoin', cryptoFormat(crypto.bitcoin), 'is-crypto'));
+    if (Number.isFinite(crypto.ethereum)) parts.push(card('Ethereum', cryptoFormat(crypto.ethereum), 'is-crypto'));
+    if (Number.isFinite(crypto.solana)) parts.push(card('Solana', cryptoFormat(crypto.solana), 'is-crypto'));
+    if (Number.isFinite(crypto.dogecoin)) parts.push(card('Dogecoin', cryptoFormat(crypto.dogecoin), 'is-crypto'));
 
-    parts.push(`<span class="rate-ticker-item"><small>Referans tarihi: ${date || 'son güncelleme'}</small></span>`);
+    parts.push(`<span class="rate-ticker-item is-date"><small>${note || 'Referans'}: ${date || 'son kayıt'}</small></span>`);
+
     const html = parts.join('');
     groups.forEach(group => { group.innerHTML = html; });
     if (status) status.hidden = true;
   }
 
-  function siteFallbackFx() {
-    const data = window.MARKET_DATA;
-    if (!data?.fx) return null;
-    const key = Object.keys(data.fx).filter(k => data.fx[k]).sort().at(-1);
-    const row = data.fx[key];
-    if (!row) return null;
-    return {
-      rates: { USD: row.USD, EUR: row.EUR, GBP: row.GBP, CHF: row.CHF },
-      date: row.date || key
-    };
+  function latestLocalSnapshot() {
+    const market = window.MARKET_DATA;
+    const cryptoData = window.CRYPTO_DATA;
+    const snapshot = { fx: {}, crypto: {}, metals: {}, date: '', note: 'Son güvenilir kayıt' };
+
+    if (market?.fx) {
+      const key = Object.keys(market.fx).filter(k => market.fx[k]).sort().at(-1);
+      const row = key ? market.fx[key] : null;
+      if (row) {
+        ['USD', 'EUR', 'GBP', 'CHF'].forEach(code => {
+          const value = Number(row[code]);
+          if (Number.isFinite(value)) snapshot.fx[code] = value;
+        });
+        snapshot.date = row.date || key;
+
+        const commodity = market.commodities?.[key];
+        const usdTry = Number(row.USD);
+        if (commodity && Number.isFinite(usdTry)) {
+          const gold = Number(commodity.gold);
+          const silver = Number(commodity.silver);
+          const copper = Number(commodity.copper);
+          if (Number.isFinite(gold)) snapshot.metals.goldGram = gold * usdTry / 31.1034768;
+          if (Number.isFinite(silver)) snapshot.metals.silverGram = silver * usdTry / 31.1034768;
+          if (Number.isFinite(copper)) snapshot.metals.copperKg = copper * usdTry / 1000;
+        }
+
+        const assets = cryptoData?.assets || {};
+        const map = { bitcoin: 'btc', ethereum: 'eth', solana: 'sol', dogecoin: 'doge' };
+        Object.entries(map).forEach(([out, keyName]) => {
+          const usd = Number(assets[keyName]?.latestUSD);
+          if (Number.isFinite(usd) && Number.isFinite(usdTry)) snapshot.crypto[out] = usd * usdTry;
+        });
+      }
+    }
+    return snapshot;
+  }
+
+  function withTimeout(url, milliseconds = 6500) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), milliseconds);
+    return fetch(url, { cache: 'no-store', signal: controller.signal })
+      .finally(() => clearTimeout(timer));
   }
 
   async function fetchFx() {
     const symbols = fxOrder.join(',');
-    const response = await fetch(`https://api.frankfurter.dev/v1/latest?base=TRY&symbols=${symbols}`, { cache: 'no-store' });
+    const response = await withTimeout(`https://api.frankfurter.dev/v1/latest?base=TRY&symbols=${symbols}`);
     if (!response.ok) throw new Error('Kur servisi yanıt vermedi');
     const data = await response.json();
-    const tlRates = {};
+    const rates = {};
     fxOrder.forEach(code => {
-      const tryToCurrency = Number(data.rates?.[code]);
-      tlRates[code] = tryToCurrency > 0 ? 1 / tryToCurrency : NaN;
+      const inverse = Number(data.rates?.[code]);
+      if (inverse > 0) rates[code] = 1 / inverse;
     });
-    return { rates: tlRates, date: data.date };
+    return { rates, date: data.date };
   }
 
   async function fetchCrypto() {
-    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=try';
-    const response = await fetch(url, { cache: 'no-store' });
+    const response = await withTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,dogecoin&vs_currencies=try');
     if (!response.ok) throw new Error('Kripto servisi yanıt vermedi');
     const data = await response.json();
     return {
@@ -89,18 +122,16 @@
   }
 
   async function fetchMetal(symbol) {
-    const response = await fetch(`https://api.gold-api.com/price/${symbol}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`${symbol} fiyatı alınamadı`);
+    const response = await withTimeout(`https://api.gold-api.com/price/${symbol}`);
+    if (!response.ok) throw new Error(`${symbol} alınamadı`);
     return response.json();
   }
 
   async function fetchMetals(usdTry) {
     if (!Number.isFinite(usdTry)) return {};
     const results = await Promise.allSettled(['XAU', 'XAG', 'HG'].map(fetchMetal));
-    const price = index => results[index].status === 'fulfilled' ? Number(results[index].value?.price) : NaN;
-    const xau = price(0);
-    const xag = price(1);
-    const hg = price(2);
+    const get = i => results[i].status === 'fulfilled' ? Number(results[i].value?.price) : NaN;
+    const xau = get(0), xag = get(1), hg = get(2);
     return {
       goldGram: Number.isFinite(xau) ? xau * usdTry / 31.1034768 : NaN,
       silverGram: Number.isFinite(xag) ? xag * usdTry / 31.1034768 : NaN,
@@ -108,30 +139,39 @@
     };
   }
 
-  async function start() {
-    let fxResult;
+  async function updateLive(base) {
+    const next = JSON.parse(JSON.stringify(base));
+    let liveCount = 0;
+
     try {
-      fxResult = await fetchFx();
-    } catch (_) {
-      fxResult = siteFallbackFx() || { rates: {}, date: '' };
-    }
+      const fx = await fetchFx();
+      next.fx = { ...next.fx, ...fx.rates };
+      next.date = fx.date || next.date;
+      liveCount++;
+    } catch (_) {}
 
     const [cryptoResult, metalsResult] = await Promise.allSettled([
       fetchCrypto(),
-      fetchMetals(Number(fxResult.rates.USD))
+      fetchMetals(Number(next.fx.USD))
     ]);
 
-    render({
-      fx: fxResult.rates,
-      date: fxResult.date,
-      crypto: cryptoResult.status === 'fulfilled' ? cryptoResult.value : {},
-      metals: metalsResult.status === 'fulfilled' ? metalsResult.value : {}
-    });
+    if (cryptoResult.status === 'fulfilled') {
+      next.crypto = { ...next.crypto, ...cryptoResult.value };
+      liveCount++;
+    }
+    if (metalsResult.status === 'fulfilled') {
+      const valid = Object.fromEntries(Object.entries(metalsResult.value).filter(([, v]) => Number.isFinite(v)));
+      if (Object.keys(valid).length) {
+        next.metals = { ...next.metals, ...valid };
+        liveCount++;
+      }
+    }
+
+    next.note = liveCount ? 'Güncel referans' : 'Son güvenilir kayıt';
+    render(next);
   }
 
-  start().catch(() => {
-    const fallback = siteFallbackFx();
-    if (fallback) render({ fx: fallback.rates, date: fallback.date });
-    else if (status) status.textContent = 'Güncel piyasa değerleri şu anda alınamıyor.';
-  });
+  const fallback = latestLocalSnapshot();
+  render(fallback); // API beklenirken bant hiçbir zaman boş kalmaz.
+  updateLive(fallback).catch(() => render(fallback));
 })();
